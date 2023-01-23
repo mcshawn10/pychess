@@ -16,6 +16,7 @@ all_pieces = ['bR', 'bN', 'bB', 'bQ', 'bK','bp','wR', 'wN', 'wB', 'wQ', 'wK', 'w
 white = ['wR', 'wN', 'wB', 'wQ', 'wK', 'wp']
 black = ['bR', 'bN', 'bB', 'bQ', 'bK','bp']
 
+
 avail_white = ['wR', 'wN', 'wB', 'wQ', 'wK','wR', 'wN', 'wB','wp','wp','wp','wp','wp','wp','wp','wp']
 avail_black = ['bR', 'bN', 'bB', 'bQ', 'bK','bR', 'bN', 'bB','bp','bp','bp','bp','bp','bp','bp','bp']
 # needed arrays/tuples
@@ -34,14 +35,23 @@ move_color = ["-"]
 
 screen = pygame.display.set_mode((512, 512))  # Setting the screen size
 screen.fill(pygame.Color((255, 228, 181)))  # intitally fills screen to be all tan color
-pygame.display.set_caption("A.I. HW #2")  # title of the pygame window
+pygame.display.set_caption("PyChess")  # title of the pygame window
 
 
 class Piece:
+    
     def __init__(self, pos, name, color):
         self.pos = pos # should be a tuple
         self.name = name
         self.color = color
+        self.selected = False
+        self.coordinate = None 
+
+    def __eq__(self, other):
+
+        if self.pos == other.pos and self.name == other.name and self.color == other.color:
+            return True
+        else: return False
         
         
 
@@ -258,6 +268,7 @@ class ChessBoard:
         self.b = b  #  b = board_arr
         self.TAN = (255, 228, 181)  # RGB color combination
         self.BROWN = (139, 101, 8)
+        self.YELLOW = (255, 255, 153)
         self.rxc = 8  # dimensions of row and columns (9)
         self.height = 512  # dimensions of the board (constants)
         self.width = 512
@@ -382,7 +393,28 @@ class ChessBoard:
         clr = self.what_color(piece)
         return Piece(pos,name,clr)
 
-    
+    def is_selected(self, xc, yc, p):
+        '''
+        how can i make the piece be true such that the square will change color?
+
+        if i click on a piece, that piece should highlight (square)
+        if I click on that same piece again, it should unhighlight
+        if i click on another piece, the color should change
+
+        where would i put this?
+        if i select a piece, i should be able to know that squares coordinates, then change that squares color
+        '''
+
+        if p.selected: #if selected then light up
+
+            pygame.draw.rect(screen, self.YELLOW, pygame.Rect(yc*self.squares, xc*self.squares, self.squares, self.squares))
+        
+            pygame.display.flip()
+            #pygame.display.flip()
+        else: # if clicked on again, (FALSE) then change back to original color
+            pass
+            #pygame.display.flip()
+            
         
 
     def RUN_ALL(self):
@@ -402,31 +434,44 @@ class ChessBoard:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()                    
                     x, y = self.get_pos(mouse_pos)
+                    # is_selected could go here
+                    # what is going to make the piece (square) get selected == True?
+
+                    
                                        
                     clicks_clicked, clicks_stored = self.get_clicks((x,y), clicks_stored, clicks_clicked)
                    
                     if len(clicks_stored) == 2:
                          
                         curr_piece, nxt_piece = self.two_pieces(clicks_stored, clicks_clicked)
+                        curr_piece.selected = True
+
+                        self.is_selected(x, y, curr_piece)
 
                          
                         if move_color[0] == curr_piece.color:
+                            # if same color start over
                             clicks_clicked = ()
-                            clicks_stored.clear()                            
+                            clicks_stored.clear() 
+                            curr_piece.selected = False                           
                             continue
 
                         elif move_color[0] != curr_piece.color:
+                            # if not the same color then
                             move_color.clear()
                             move_color.append(curr_piece.color)
                             rlz = ChessRules(curr_piece, nxt_piece)
 
-                            if rlz.is_legal() == True:
+
+                            if rlz.is_legal():
                                 rlz.in_check()
                                 self.move_piece() # may need to modify to just taking in the two points
                                 
                             else: 
                                 clicks_clicked = ()
                                 clicks_stored.clear()
+                                curr_piece.selected = False
+                                nxt_piece.selected = False
                     
                     self.update()
 
@@ -448,9 +493,9 @@ class AI:
         pass
 
 
-
-test = ChessBoard(board_arr)
-test.RUN_ALL()
-print("test")
+if __name__ == "__main__":
+        test = ChessBoard(board_arr)
+        test.RUN_ALL()
+        print("test")
 
 
