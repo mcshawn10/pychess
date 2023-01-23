@@ -4,8 +4,7 @@ import os
 import sys
 import time
 import math
-from turtle import bk
-from IPython.display import clear_output
+
 import pygame
 
 pygame.init()
@@ -37,7 +36,7 @@ screen = pygame.display.set_mode((512, 512))  # Setting the screen size
 screen.fill(pygame.Color((255, 228, 181)))  # intitally fills screen to be all tan color
 pygame.display.set_caption("PyChess")  # title of the pygame window
 
-
+print("HAHAHA")
 class Piece:
     
     def __init__(self, pos, name, color):
