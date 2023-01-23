@@ -37,6 +37,7 @@ screen.fill(pygame.Color((255, 228, 181)))  # intitally fills screen to be all t
 pygame.display.set_caption("PyChess")  # title of the pygame window
 
 print("HAHAHA")
+print("testing token")
 class Piece:
     
     def __init__(self, pos, name, color):
